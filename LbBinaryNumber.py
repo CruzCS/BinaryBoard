@@ -21,6 +21,7 @@ class LbBinaryNumber:
         for i in range(0, 8):
             self.bits[i] = bool(number & (1 << i))
 
+    # @brief loads the twos complement of the current number
     def twos_complement(self):
         new_num = 0
         for i in range(0, 8):

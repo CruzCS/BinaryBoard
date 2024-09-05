@@ -63,7 +63,8 @@ class GUI:
         self.root.wm_iconphoto(False, ImageTk.PhotoImage(ico))
         self.one = ImageTk.PhotoImage(file = "resources/1.png")# use ur own path
         self.zero = ImageTk.PhotoImage(file = "resources/0.png")# use ur own path
-        self.error = ImageTk.PhotoImage(file = "resources/error.png")# use ur own path
+        self.error_false = ImageTk.PhotoImage(file = "resources/error_false.png")# use ur own path
+        self.error_true = ImageTk.PhotoImage(file = "resources/error_true.png")# use ur own path
 
         # Main colors for UI
         self.background = "#1e1e1e"
@@ -100,6 +101,7 @@ class GUI:
         self.bit4 = tk.Label(self.root, bd = 0, image= self.zero)
         self.bit2 = tk.Label(self.root, bd = 0, image= self.zero)
         self.bit1 = tk.Label(self.root, bd = 0, image= self.zero) 
+        self.bit_error = tk.Label(self.root, bd = 0, image= self.error_false) 
         self.bit128.pack(side=tk.RIGHT, padx = (1, 30)) # padding to the left of the board
         self.bit64.pack(side=tk.RIGHT, padx = 1)
         self.bit32.pack(side=tk.RIGHT, padx = 1)
@@ -107,7 +109,8 @@ class GUI:
         self.bit8.pack(side=tk.RIGHT, padx = 1)
         self.bit4.pack(side=tk.RIGHT, padx = 1)
         self.bit2.pack(side=tk.RIGHT, padx = 1)
-        self.bit1.pack(side=tk.RIGHT, padx = (30, 1)) # padding to the right of the board
+        self.bit1.pack(side=tk.RIGHT, padx = 1) # padding to the right of the board
+        self.bit_error.pack(side=tk.RIGHT, padx = (35, 1)) # padding to the right of the board
 
         # ==== Mode Select ====
         self.mode_select_frame = tk.Frame(self.root, bg = self.background, width=40) # frame
@@ -225,6 +228,7 @@ class GUI:
 
         self.root.mainloop()
 
+    # displays the inputted number on the GUI and physical binary board
     def display_number_on_binary_board_and_gui(self, num, error_bool):
         self.display_number_on_binary_board(num, error_bool)
         self.display_number_on_gui(num, error_bool)
@@ -237,41 +241,29 @@ class GUI:
         #     self.binary_board.setMainLED(2 ** i, number.bits[i])
         pass
 
+    # displays the inputted number on the GUI binary board display
     def display_number_on_gui(self, num, error_bool):
         number = LbBinaryNumber(num)
 
-        # sets the board to all zeros if the number is zero
-        if num == 0:
-            self.bit1.config(image=self.zero)
-            self.bit2.config(image=self.zero)
-            self.bit4.config(image=self.zero)
-            self.bit8.config(image=self.zero)
-            self.bit16.config(image=self.zero)
-            self.bit32.config(image=self.zero)
-            self.bit64.config(image=self.zero)
-            self.bit128.config(image=self.zero)
-
         # sets the board to the number if it is within range of binary
-        elif num > 0 and num < 256:
-
-            # lists of all of the labels
-            self.board = [self.bit1, self.bit2, self.bit4, self.bit8, self.bit16, self.bit32, self.bit64, self.bit128] 
-
-            # gets text comprised of 1's and 0's to display on the GUI binary board
-            binary_text = number.get_loaded_number_binary()
-
-            # goes through each digit and sets the image of the label to the corresponding image
-            for i in range(0, 8):
-                if binary_text[i] == "1":
-                    self.board[i].config(image=self.one)
-                else:
-                    self.board[i].config(image=self.zero)
-
-        # sets the board to all red if the number is out of range / On physical board, the error LED will light up, not all LEDs
+        # lists of all of the labels
+        self.board = [self.bit1, self.bit2, self.bit4, self.bit8, self.bit16, self.bit32, self.bit64, self.bit128] 
+        
+        # gets text comprised of 1's and 0's to display on the GUI binary board
+        binary_text = number.get_loaded_number_binary()
+        
+        # goes through each digit and sets the image of the label to the corresponding image
+        for i in range(0, 8):
+            if binary_text[i] == "1":
+                self.board[i].config(image=self.one)
+            else:
+                self.board[i].config(image=self.zero)
+                
+        # sets the error bit on gui
         if error_bool:
-            self.output_text_label.config(text="Number out of range.", fg="red")
-            for i in range(0, 8):
-                self.board[i].config(image=self.error)
+            self.bit_error.config(image=self.error_true)
+        else:
+            self.bit_error.config(image=self.error_false)           
 
 
 
