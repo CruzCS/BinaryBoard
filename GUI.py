@@ -59,11 +59,11 @@ class GUI:
         self.root.configure(bg="#1e1e1e")
        
 
-        ico = Image.open("C:\\Users\\Chris\\Downloads\\BinaryBoard-master\\BinaryBoard-master\\resources\\bulb.ico") # use ur own path
+        ico = Image.open("resources/bulb.ico")
         self.root.wm_iconphoto(False, ImageTk.PhotoImage(ico))
-        self.one = ImageTk.PhotoImage(file = "C:\\Users\\Chris\\Downloads\\BinaryBoard-master\\BinaryBoard-master\\resources\\1.png")# use ur own path
-        self.zero = ImageTk.PhotoImage(file = "C:\\Users\\Chris\\Downloads\\BinaryBoard-master\\BinaryBoard-master\\resources\\0.png")# use ur own path
-        self.error = ImageTk.PhotoImage(file = "C:\\Users\\Chris\\Downloads\\BinaryBoard-master\\BinaryBoard-master\\resources\\error.png")# use ur own path
+        self.one = ImageTk.PhotoImage(file = "resources/1.png")# use ur own path
+        self.zero = ImageTk.PhotoImage(file = "resources/0.png")# use ur own path
+        self.error = ImageTk.PhotoImage(file = "resources/error.png")# use ur own path
 
         # Main colors for UI
         self.background = "#1e1e1e"
@@ -76,7 +76,7 @@ class GUI:
         # The id of the active mode
         self.current_mode = -2
 
-        self.titleImage = Image.open("C:\\Users\\Chris\\Downloads\\BinaryBoard-master\\BinaryBoard-master\\resources\\binaryBoard.png")# use ur own path
+        self.titleImage = Image.open("resources/binaryBoard.png")# use ur own path
         self.title = ImageTk.PhotoImage(self.titleImage)
         self.title_label = tk.Label(self.root, image=self.title, bg= self.background)
         self.title_label.pack()
@@ -90,10 +90,27 @@ class GUI:
         self.sub_font = tk.font.Font(family = "OCR A Extended", size = 15)
         self.button_font = tk.font.Font(family = "OCR A Extended", size = 12, weight = "bold")
 
+        # Visual representation of the binary board (on screen)
+        # Creating and packing the labels in reverse order (to match binary board)
+        self.bit128 = tk.Label(self.root, bd = 0, image= self.zero) 
+        self.bit64 = tk.Label(self.root, bd = 0, image= self.zero)
+        self.bit32 = tk.Label(self.root, bd = 0, image= self.zero)
+        self.bit16 = tk.Label(self.root, bd = 0, image= self.zero)
+        self.bit8 = tk.Label(self.root, bd = 0, image= self.zero)
+        self.bit4 = tk.Label(self.root, bd = 0, image= self.zero)
+        self.bit2 = tk.Label(self.root, bd = 0, image= self.zero)
+        self.bit1 = tk.Label(self.root, bd = 0, image= self.zero) 
+        self.bit128.pack(side=tk.RIGHT, padx = (1, 30)) # padding to the left of the board
+        self.bit64.pack(side=tk.RIGHT, padx = 1)
+        self.bit32.pack(side=tk.RIGHT, padx = 1)
+        self.bit16.pack(side=tk.RIGHT, padx = 1)
+        self.bit8.pack(side=tk.RIGHT, padx = 1)
+        self.bit4.pack(side=tk.RIGHT, padx = 1)
+        self.bit2.pack(side=tk.RIGHT, padx = 1)
+        self.bit1.pack(side=tk.RIGHT, padx = (30, 1)) # padding to the right of the board
 
         # ==== Mode Select ====
         self.mode_select_frame = tk.Frame(self.root, bg = self.background, width=40) # frame
-
 
         self.select_label = tk.Label(self.mode_select_frame, bd = 0, text="Select The Mode", font = self.heading_font, bg = self.background, fg = self.green_color) # title label
         self.mode_list_box = tk.Listbox(self.mode_select_frame, bg = self.background, bd = 0, fg = self.foreground, font = self.sub_font) # mode options that you can choose from
@@ -109,14 +126,9 @@ class GUI:
 
         self.mode_select_button = tk.Button(self.mode_select_frame, text="Select", command=lambda: self.select_mode(), font = self.button_font, bg = self.green_color, fg = "black" , width = 15)
         
-        
-        
         self.select_label.pack()
         self.mode_list_box.pack()
         self.mode_select_button.pack()
-
-        self.guiBoard(self.root)
-        
 
         # ==== Display Number ====
         self.display_number_frame = tk.Frame(self.root, bg = self.background) # frame
@@ -213,16 +225,55 @@ class GUI:
 
         self.root.mainloop()
 
+    def display_number_on_binary_board_and_gui(self, num, error_bool):
+        self.display_number_on_binary_board(num, error_bool)
+        self.display_number_on_gui(num, error_bool)
+
     # displays the inputted number on the binary board
     def display_number_on_binary_board(self, num, error_bool):
-        number = LbBinaryNumber(num)
-        print(number.get_loaded_number_binary() + " ERR: " + str(error_bool))
-        
-            
         # FIXME: Pi dependent code
         # self.binary_board.setErrorLED(error_bool)
         # for i in range(1, 8):
         #     self.binary_board.setMainLED(2 ** i, number.bits[i])
+        pass
+
+    def display_number_on_gui(self, num, error_bool):
+        number = LbBinaryNumber(num)
+
+        # sets the board to all zeros if the number is zero
+        if num == 0:
+            self.bit1.config(image=self.zero)
+            self.bit2.config(image=self.zero)
+            self.bit4.config(image=self.zero)
+            self.bit8.config(image=self.zero)
+            self.bit16.config(image=self.zero)
+            self.bit32.config(image=self.zero)
+            self.bit64.config(image=self.zero)
+            self.bit128.config(image=self.zero)
+
+        # sets the board to the number if it is within range of binary
+        elif num > 0 and num < 256:
+
+            # lists of all of the labels
+            self.board = [self.bit1, self.bit2, self.bit4, self.bit8, self.bit16, self.bit32, self.bit64, self.bit128] 
+
+            # gets text comprised of 1's and 0's to display on the GUI binary board
+            binary_text = number.get_loaded_number_binary()
+
+            # goes through each digit and sets the image of the label to the corresponding image
+            for i in range(0, 8):
+                if binary_text[i] == "1":
+                    self.board[i].config(image=self.one)
+                else:
+                    self.board[i].config(image=self.zero)
+
+        # sets the board to all red if the number is out of range / On physical board, the error LED will light up, not all LEDs
+        if error_bool:
+            self.output_text_label.config(text="Number out of range.", fg="red")
+            for i in range(0, 8):
+                self.board[i].config(image=self.error)
+
+
 
     # calls pack_forget() on the frame associated with the current mode (self.current_mode)
     def unpack_current_frame(self):
@@ -305,15 +356,14 @@ class GUI:
 
         # Display on lightboard
         error_led = (num < 0 or num > 255)
-        self.display_number_on_binary_board(num, error_led)
-        self.set_guiBoard(self.display_number_frame, num, error_led)
+        self.display_number_on_binary_board_and_gui(num, error_led)
 
         # output success information to the user
         self.output_text_label.config(text="Displayed Number", fg="green")
 
         self.select_mode_mode()
 
-    # ==== Displpay Ascii Mode ====
+    # ==== Display Ascii Mode ====
 
     # starts display ascii mode
     def display_ascii_mode(self):
@@ -340,8 +390,7 @@ class GUI:
         # Display on lightboard
         num = ord(char)
         error_led = (num < 0 or num > 255)
-        self.display_number_on_binary_board(num, error_led)
-        self.set_guiBoard(self.display_ascii_frame, num, error_led)
+        self.display_number_on_binary_board_and_gui(num, error_led)
 
         # outputs success information
         self.output_text_label.config(text="Displayed Ascii Number", fg="green")
@@ -384,8 +433,7 @@ class GUI:
             # display number on binary board and output on GUI
             bin_num = LbBinaryNumber(displayed_number)
             self.byte_loop_output_stringvar.set(bin_num.get_loaded_number_binary() + " - " + str(displayed_number))
-            self.display_number_on_binary_board(displayed_number, False)
-            self.set_guiBoard(self.byte_loop_frame, displayed_number, False)
+            self.display_number_on_binary_board_and_gui(displayed_number, False)
 
             sleep(0.4)
             displayed_number += 1
@@ -427,8 +475,7 @@ class GUI:
 
         # displays first number on the binary board
         error_led = (self.add_first_number < 0 or self.add_first_number > 255)
-        self.display_number_on_binary_board(self.add_first_number, error_led)
-        self.set_guiBoard(self.add_frame, self.add_first_number, error_led)
+        self.display_number_on_binary_board_and_gui(self.add_first_number, error_led)
 
         # output success information
         self.output_text_label.config(text="Submitted and displayed first number.", fg="green")
@@ -453,8 +500,7 @@ class GUI:
 
         # displays first number on the binary board
         error_led = (self.add_second_number < 0 or self.add_second_number > 255)
-        self.display_number_on_binary_board(self.add_second_number, error_led)
-        self.set_guiBoard(self.add_frame, self.add_second_number, error_led)
+        self.display_number_on_binary_board_and_gui(self.add_second_number, error_led)
 
         # output success information
         self.output_text_label.config(text="Submitted and displayed second number.", fg="green")
@@ -470,8 +516,7 @@ class GUI:
 
         # displays the sum on the binary board
         error_led = (num < 0 or num > 255)
-        self.display_number_on_binary_board(num, error_led)
-        self.set_guiBoard(self.add_frame, num, error_led)
+        self.display_number_on_binary_board_and_gui(num, error_led)
 
         # output success information
         self.output_text_label.config(text="Submitted and displayed sum.", fg="green")
@@ -508,8 +553,7 @@ class GUI:
 
         # displays first number on binary board
         error_led = (self.subtract_first_number < 0 or self.subtract_first_number > 255)
-        self.display_number_on_binary_board(self.subtract_first_number, error_led)
-        self.set_guiBoard(self.subtract_frame, self.subtract_first_number, error_led)
+        self.display_number_on_binary_board_and_gui(self.subtract_first_number, error_led)
 
         # output success information
         self.output_text_label.config(text="Submitted and displayed first number.", fg="green")
@@ -533,8 +577,7 @@ class GUI:
 
         # displays first number on binary board
         error_led = (self.subtract_second_number < 0 or self.subtract_second_number > 255)
-        self.display_number_on_binary_board(self.subtract_second_number, error_led)
-        self.set_guiBoard(self.subtract_frame, self.subtract_second_number, error_led)
+        self.display_number_on_binary_board_and_gui(self.subtract_second_number, error_led)
 
         # output success information
         self.output_text_label.config(text="Submitted and displayed second number.", fg="green")
@@ -551,8 +594,7 @@ class GUI:
         num.twos_complement()
 
         # display two's complement on binary board
-        self.display_number_on_binary_board(num.number, False)
-        self.set_guiBoard(self.subtract_frame, num.number , False)
+        self.display_number_on_binary_board_and_gui(num.number, False)
 
         # output success information
         self.output_text_label.config(text="Displayed two's complement.", fg="green")
@@ -569,8 +611,7 @@ class GUI:
 
         # display result on binary board
         error_led = (num < 0 or num > 255)
-        self.display_number_on_binary_board(num, error_led)
-        self.set_guiBoard(self.subtract_frame, num, error_led)
+        self.display_number_on_binary_board_and_gui(num, error_led)
 
         # output success information
         self.output_text_label.config(text="Submitted and displayed result.", fg="green")
@@ -607,91 +648,10 @@ class GUI:
         bin_num.twos_complement()
 
         # display two's complement on the binary board
-        self.display_number_on_binary_board(bin_num.number, False)
-        self.set_guiBoard(self.twoscomp_frame, bin_num.number, False)
+        self.display_number_on_binary_board_and_gui(bin_num.number, False)
 
         # output success information
         self.output_text_label.config(text="Displayed two's complement.", fg="green")
 
         # exits two's complement mode and goes to select mode mode
         self.select_mode_mode()
-
-    # ==== End of Modes ====
-
-
-    # ==== Binary Board (visual representatin on the screen)====
-
-    # Visual representation of the binary board (on screen)
-    def guiBoard(self, frame):
-    
-        # Creating and packing the labels in reverse order (to match binary board)
-        self.bit128 = tk.Label(frame, bd = 0, image= self.zero) 
-        self.bit128.pack(side=tk.RIGHT, padx = (1, 30)) # padding to the left of the board
-
-        self.bit64 = tk.Label(frame, bd = 0, image= self.zero)
-        self.bit64.pack(side=tk.RIGHT, padx = 1)
-
-        self.bit32 = tk.Label(frame, bd = 0, image= self.zero)
-        self.bit32.pack(side=tk.RIGHT, padx = 1)
-
-        self.bit16 = tk.Label(frame, bd = 0, image= self.zero)
-        self.bit16.pack(side=tk.RIGHT, padx = 1)
-
-        self.bit8 = tk.Label(frame, bd = 0, image= self.zero)
-        self.bit8.pack(side=tk.RIGHT, padx = 1)
-
-        self.bit4 = tk.Label(frame, bd = 0, image= self.zero)
-        self.bit4.pack(side=tk.RIGHT, padx = 1)
-
-        self.bit2 = tk.Label(frame, bd = 0, image= self.zero)
-        self.bit2.pack(side=tk.RIGHT, padx = 1)
-
-        self.bit1 = tk.Label(frame, bd = 0, image= self.zero) 
-        self.bit1.pack(side=tk.RIGHT, padx = (30, 1)) # padding to the right of the board
-    
-    # sets the on-screen board to a specific number
-    def set_guiBoard(self, frame, num ,error_bool):
-
-        number = LbBinaryNumber(num)
-
-        # sets the board to all zeros if the number is zero
-        if num == 0:
-            self.bit1.config(image=self.zero)
-            self.bit2.config(image=self.zero)
-            self.bit4.config(image=self.zero)
-            self.bit8.config(image=self.zero)
-            self.bit16.config(image=self.zero)
-            self.bit32.config(image=self.zero)
-            self.bit64.config(image=self.zero)
-            self.bit128.config(image=self.zero)
-
-        # sets the board to the number if it is within range of binary
-        elif num > 0 and num < 256:
-
-            #lists of all of the labels
-            self.board = [self.bit1, self.bit2, self.bit4, self.bit8, self.bit16, self.bit32, self.bit64, self.bit128] 
-
-            # lists of all of the digits contained in the number
-            self.digits = []
-
-            # seperateds each digit from number and adds it to the list
-            for i in number.get_loaded_number_binary():
-                self.digits.append(i)
-
-            # goes through each digit and sets the image of the label to the corresponding image
-            for i in range(0, 8):
-                if self.digits[i] == "1":
-                    self.board[i].config(image=self.one)
-                else:
-                    self.board[i].config(image=self.zero)
-
-        # sets the board to all red if the number is out of range / On physical board, the error LED will light up, not all LEDs
-        if error_bool:
-            self.output_text_label.config(text="Number out of range.", fg="red")
-            for i in range(0, 8):
-                self.board[i].config(image=self.error)
-
-              
-                        
-            
-            
