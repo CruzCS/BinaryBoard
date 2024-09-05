@@ -420,12 +420,12 @@ class GUI:
                 self.byte_loop_running_lock.release()
                 break
 
+            # display number on binary board and output on GUI
+            self.byte_loop_output_stringvar.set(str(displayed_number))
+            self.display_number_on_binary_board_and_gui(displayed_number, False)
+
             self.byte_loop_running_lock.release()
 
-            # display number on binary board and output on GUI
-            bin_num = LbBinaryNumber(displayed_number)
-            self.byte_loop_output_stringvar.set(bin_num.get_loaded_number_binary() + " - " + str(displayed_number))
-            self.display_number_on_binary_board_and_gui(displayed_number, False)
 
             sleep(0.4)
             displayed_number += 1
@@ -575,7 +575,7 @@ class GUI:
         self.output_text_label.config(text="Submitted and displayed second number.", fg="green")
 
         # changes functionality of the button and entry for displaying the two's complement of the second number
-        self.subtract_button.config(text="Display Two's Complement of Second Number", command=self.subtract_display_twos_complement)
+        self.subtract_button.config(text="Display Two's\nComplement of Second Number", command=self.subtract_display_twos_complement)
         self.subtract_entry.config(state='disabled')
 
     # displays the two's complement of the second number
