@@ -11,7 +11,7 @@ NOTE: if you want to make this work on the binary board then you need to uncomme
 from time import sleep
 from threading import Thread, Lock
 import tkinter as tk
-from PIL import Image, ImageTk
+from PIL import Image
 import tkinter.font as tkfont
 from LbBinaryNumber import LbBinaryNumber # this is a wrapper around a binary number
 
@@ -57,19 +57,6 @@ class GUI:
         self.root.geometry("900x600")
         self.root.title("Binary Board")
         self.root.configure(bg="#1e1e1e")
-       
-
-        ico = Image.open("resources/bulb.ico")
-        self.root.wm_iconphoto(False, ImageTk.PhotoImage(ico))
-        self.one = ImageTk.PhotoImage(file = "resources/1.png")# use ur own path
-        self.zero = ImageTk.PhotoImage(file = "resources/0.png")# use ur own path
-        self.error_false = ImageTk.PhotoImage(file = "resources/error_false.png")# use ur own path
-        self.error_true = ImageTk.PhotoImage(file = "resources/error_true.png")# use ur own path
-
-        # Main colors for UI
-        self.background = "#1e1e1e"
-        self.foreground = "white"
-        self.green_color = "#00bf63"
 
         # FIXME: Pi Dependent Code
         #self.binary_board = BinaryBoard()
@@ -77,10 +64,23 @@ class GUI:
         # The id of the active mode
         self.current_mode = -2
 
-        self.titleImage = Image.open("resources/binaryBoard.png")# use ur own path
-        self.title = ImageTk.PhotoImage(self.titleImage)
-        self.title_label = tk.Label(self.root, image=self.title, bg= self.background)
+        self.root.wm_iconphoto(False, tk.PhotoImage(file = "resources/bulb.png")) 
+        self.one = tk.PhotoImage(file = "resources/1.png")# use ur own path
+        self.zero = tk.PhotoImage(file = "resources/0.png")# use ur own path
+        self.error_false = tk.PhotoImage(file = "resources/error_false.png")# use ur own path
+        self.error_true = tk.PhotoImage(file = "resources/error_true.png")# use ur own path
+
+        # Main colors for UI
+        self.background = "#1e1e1e"
+        self.foreground = "white"
+        self.green_color = "#00bf63"
+
+
+        # title label
+        self.title_image = tk.PhotoImage(file="resources/binaryBoard.png")# use ur own path
+        self.title_label = tk.Label(self.root, bd=0, image=self.title_image)
         self.title_label.pack()
+
         
         # A label that will be used to output messages to the user
         self.output_text_label = tk.Label(self.root, text="", bg=self.background, fg=self.green_color, font=("bold"))
