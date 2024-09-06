@@ -11,7 +11,7 @@ NOTE: if you want to make this work on the binary board then you need to uncomme
 from time import sleep
 from threading import Thread, Lock
 import tkinter as tk
-from PIL import Image
+#from PIL import Image
 import tkinter.font as tkfont
 from LbBinaryNumber import LbBinaryNumber # this is a wrapper around a binary number
 
@@ -236,8 +236,9 @@ class GUI:
     # displays the inputted number on the binary board
     def display_number_on_binary_board(self, num, error_bool):
         # FIXME: Pi dependent code
+        # number = LbBinaryNumber(num)
         # self.binary_board.setErrorLED(error_bool)
-        # for i in range(1, 8):
+        # for i in range(0, 8):
         #     self.binary_board.setMainLED(2 ** i, number.bits[i])
         pass
 
